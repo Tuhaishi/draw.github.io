@@ -3,13 +3,8 @@
 
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-    <title>The Park</title>
-    <meta name="author" content="Jui-Shan Liang" />
-    <link rel="stylesheet" href="jquery-ui-1.8.16.custom.css" type="text/css" />
+    <title>Lucky Draw</title>
     <link rel="stylesheet" href="style.css" type="text/css" />
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
-    <script src="jluckydraw.js" type="text/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body {
@@ -28,30 +23,79 @@
             height: 100%;
             overflow: hidden;
             background-color: rgba(0, 0, 0, 0.4);
-            -webkit-animation: fadein 2s;
-        }
-
-        @-webkit-keyframes fadein {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
         }
 
         .modal-content {
-            background-color: #fff;
+            background-color: white;
             margin: auto;
-            margin-top: 2vh;
             padding: 20px;
             border: 1px solid #888;
             width: 50%;
-            height: 60%;
-            align-content: center;
-            font-size: 2vw;
-            border-radius: 20px;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        #uploadButton {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #uploadButton:hover {
+            background-color: #45a049;
+        }
+
+        #name_list {
+            width: 90%;
+            height: 200px;
+            margin: 20px auto;
+            display: block;
+            font-size: 16px;
+        }
+
+        #switch {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            width: 100px;
+            height: 60px;
+            background-color: green;
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #switch:hover {
+            background-color: darkgreen;
+        }
+
+        #stop {
+            position: fixed;
+            bottom: 10px;
+            left: 40%;
+            background-color: red;
+            color: white;
+                  width: 100px;
+            height: 60px;
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #stop:hover {
+            background-color: darkred;
         }
     </style>
 </head>
@@ -60,92 +104,117 @@
     <div id="container">
         <div id="list_pane">
             <p><strong>Tickets List</strong></p>
-            <p>Loading tickets from a predefined file path...</p>
+            <textarea id="name_list" readonly>
+                Loading tickets...
+            </textarea>
         </div>
         <div id="draw_pane">
             <div id="draw">
-                <div id="draw-1" class="draw-a">
-                    <div class="text">&nbsp;</div>
-                </div>
-                <div id="draw-2" class="draw-b">
-                    <div class="text">&nbsp;</div>
-                </div>
-                <div id="draw-3" class="draw-c">
+                <div id="display-area">
                     <div id="win" class="text">&nbsp;</div>
                 </div>
-                <div id="draw-4" class="draw-b">
-                    <div class="text">&nbsp;</div>
-                </div>
-                <div id="draw-5" class="draw-a">
-                    <div class="text">&nbsp;</div>
-                </div>
             </div>
-            <button id="switch" autofocus>Draw</button>
         </div>
     </div>
     <div id="myModal" class="modal">
-        <div class="modal-content row">
-            <div class="effect8 col-sm-6 col-6 col-lg-6 col-md-6" style="height: 100%; padding: 50px 0; font-size: 30px" id="frame">
-                <p style="font-size:48px; color:black"></p>
-                <p style="font-size:48px; color:black" id="mob"></p>
-                <p style="font-size:48px; color:black" id="nid"></p>
-            </div>
-            <div class="effect8 col-sm-6 col-6 col-lg-6 col-md-6" style="height: 100%; padding: 50px 0;font-size: 20px" id="frame2"></div>
+        <div class="modal-content">
+            <p id="mob"></p>
+            <p id="nid"></p>
         </div>
     </div>
 
+    <button id="uploadButton">Upload File</button>
+    <button id="switch" autofocus>Draw</button>
+    <button id="stop">Stop</button>
+
     <script>
-        let tickets = [];
+        let participants = []; // Array to store participant data
+        let drawInterval = null;
+        let currentWinnerIndex = null; // Store the current winner index
+        var run = new Audio("run.mp3"); // Sound during rolling
+        var win = new Audio("win.mp3"); // Sound when a winner is selected
 
-        // مسار الملف
-        const filePath = "x.xlsx";
+        // Load file and extract participants
+        document.getElementById('uploadButton').addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.xlsx';
 
-        // تحميل البيانات من المسار
-function loadTicketsFromFile() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.xlsx';
+            input.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const sheetName = workbook.SheetNames[0];
+                        const sheet = workbook.Sheets[sheetName];
+                        const rows = XLSX.utils.sheet_to_json(sheet);
 
-    input.addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const sheetName = workbook.SheetNames[0];
-                const sheet = workbook.Sheets[sheetName];
-                const rows = XLSX.utils.sheet_to_json(sheet);
+                        // Build participants array
+                        participants = rows.map(row => {
+                            const fullNumber = String(row["Phone Number"] || "Unknown");
+                            const name = row["Name"] || "Unknown";
+                            const maskedNumber = fullNumber.slice(0, -4).replace(/\d/g, "x") + fullNumber.slice(-4);
+                            return { fullNumber, maskedNumber, name };
+                        });
 
-                // Extract tickets
-                tickets = rows.map(row => row["Phone Number"] || "Unknown");
-                alert("Tickets loaded successfully. Count: " + tickets.length);
-            };
-            reader.readAsArrayBuffer(file);
-        }
-    });
+                        document.getElementById('name_list').value = participants
+                            .map(p => `${p.fullNumber} - ${p.name}`)
+                            .join('\n');
+                        alert("Tickets loaded successfully. Count: " + participants.length);
+                    };
+                    reader.readAsArrayBuffer(file);
+                }
+            });
 
-    input.click(); // Trigger the file dialog
-}
-
-
-        // تحميل التذاكر عند تحميل الصفحة
-        document.addEventListener('DOMContentLoaded', function () {
-            loadTicketsFromFile(filePath);
+            input.click();
         });
 
-        // السحب العشوائي
+        // Start draw
         document.getElementById('switch').addEventListener('click', function () {
-            if (tickets.length === 0) {
-                alert("No tickets loaded. Please check the file.");
+            if (participants.length === 0) {
+                alert("No tickets loaded. Please upload a file first.");
                 return;
             }
 
-            const winnerIndex = Math.floor(Math.random() * tickets.length);
-            const winner = tickets[winnerIndex];
+            if (drawInterval) {
+                clearInterval(drawInterval);
+            }
+            run.play();
 
-            document.getElementById('win').textContent = `Winner: ${winner}`;
-            document.getElementById('myModal').style.display = 'block';
+            drawInterval = setInterval(() => {
+                currentWinnerIndex = Math.floor(Math.random() * participants.length);
+                const maskedNumber = participants[currentWinnerIndex].maskedNumber;
+                document.getElementById('win').textContent = maskedNumber; // Update display area
+            }, 100);
+        });
+
+        // Stop draw and show modal
+        document.getElementById('stop').addEventListener('click', function () {
+
+            if (drawInterval) {
+                clearInterval(drawInterval);
+                drawInterval = null; // Ensure it is fully cleared
+            }
+
+            if (currentWinnerIndex !== null && participants[currentWinnerIndex]) {
+                const { maskedNumber, name } = participants[currentWinnerIndex];
+                run.pause();
+                win.play();
+                setTimeout(() => {
+                    document.getElementById('mob').textContent = `Masked Number: ${maskedNumber}`;
+                    document.getElementById('nid').textContent = `Name: ${name}`;
+                    document.getElementById('myModal').style.display = 'block';
+
+                    // Allow re-draw when modal is closed
+                    document.getElementById('myModal').onclick = function () {
+                        document.getElementById('myModal').style.display = 'none';
+                    };
+                }, 1000);
+            } else {
+                alert("No winner selected. Please press 'Draw' first.");
+            }
         });
     </script>
 </body>
