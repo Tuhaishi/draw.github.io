@@ -60,7 +60,7 @@
             font-size: 16px;
         }
 
-        #switch {
+               #switch {
             position: fixed;
             bottom: 10px;
             left: 50%;
@@ -94,8 +94,19 @@
             cursor: pointer;
         }
 
+
         #stop:hover {
             background-color: darkred;
+        }
+
+        #win {
+            font-size: 70px;
+            color: white; /* Default color for looping numbers */
+            text-align: center;
+        }
+
+        #win.rolling {
+            color: white; /* Color during the rolling phase */
         }
     </style>
 </head>
@@ -183,10 +194,13 @@
             }
             run.play();
 
+            const winElement = document.getElementById('win');
+            winElement.classList.add('rolling'); // Add rolling class for color change
+
             drawInterval = setInterval(() => {
                 currentWinnerIndex = Math.floor(Math.random() * participants.length);
                 const maskedNumber = participants[currentWinnerIndex].maskedNumber;
-                document.getElementById('win').textContent = maskedNumber; // Update display area
+                winElement.textContent = maskedNumber; // Update display area
             }, 100);
         });
 
@@ -198,12 +212,15 @@
                 drawInterval = null; // Ensure it is fully cleared
             }
 
+            const winElement = document.getElementById('win');
+            winElement.classList.remove('rolling'); // Remove rolling class
+
             if (currentWinnerIndex !== null && participants[currentWinnerIndex]) {
                 const { maskedNumber, name } = participants[currentWinnerIndex];
                 run.pause();
                 win.play();
                 setTimeout(() => {
-                    document.getElementById('mob').textContent = `Masked Number: ${maskedNumber}`;
+                    document.getElementById('mob').textContent = `Mobile: ${maskedNumber}`;
                     document.getElementById('nid').textContent = `Name: ${name}`;
                     document.getElementById('myModal').style.display = 'block';
 
