@@ -1,0 +1,247 @@
+﻿<html>
+
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <title>The Park</title>
+    <meta name="author" content="Jui-Shan Liang" />
+    <link rel="stylesheet" href="jquery-ui-1.8.16.custom.css" type="text/css" />
+    <link rel="stylesheet" href="style.css" type="text/css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
+    <script src="jluckydraw.js" type="text/javascript"></script>
+    <style>
+        body {
+            overflow: hidden;
+            background-color: darkred;
+        }
+
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place
+            z-index: 1;
+            /* Sit on top */
+            padding-top: 100px;
+            /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%;
+            /* Full width */
+            height: 100%;
+            /* Full height */
+            overflow: hidden;
+            /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0);
+            /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
+            -webkit-animation: fadein 2s;
+            /* Safari, Chrome and Opera > 12.1 */
+
+        }
+
+        /* Safari, Chrome and Opera > 12.1 */
+        @-webkit-keyframes fadein {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            margin-top: 2vh;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            height: 60%;
+            align-content: center;
+            font-size: 2vw;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <div id="list_pane">
+            <p><strong>Tickets List</strong></p>
+            <textarea id="name_list">
+14953
+14898
+15046
+15048
+14904
+15031
+15017
+14932
+14923
+14963
+14887
+15008
+15006
+14991
+14993
+14892
+14974
+14957
+14969
+15051
+14899
+14905
+14922
+15049
+14956
+14910
+15053
+14967
+14954
+14983
+15041
+15038
+14920
+15026
+14999
+14928
+14945
+14947
+14888
+14938
+14998
+14965
+15005
+14977
+14921
+14934
+14949
+14960
+14951
+15014
+15013
+14971
+14972
+14961
+15010
+14915
+14939
+14894
+14924
+15001
+14927
+14985
+15029
+14914
+14981
+15030
+14941
+15054
+14964
+14952
+14984
+14902
+14917
+14935
+15058
+15033
+15012
+14944
+14962
+14942
+14955
+14995
+15023
+14968
+15032
+14890
+14996
+15056
+14973
+14978
+15022
+14913
+14980
+15000
+14931
+15021
+14896
+14948
+15055
+14926
+14883
+14933
+15002
+15016
+14929
+14919
+14970
+14916
+15047
+15015
+15040
+15050
+14911
+14943
+15018
+14966
+14997
+14976
+14989
+14908
+15027
+14986
+14946
+15020
+14897
+15004
+14940
+15007
+15039
+14988
+</textarea>
+        </div>
+        <div id="draw_pane">
+            <div id="draw">
+                <div id="draw-1" class="draw-a">
+                    <div class="text">&nbsp;</div>
+                </div>
+                <div id="draw-2" class="draw-b">
+                    <div class="text">&nbsp;</div>
+                </div>
+                <div id="draw-3" class="draw-c">
+                    <div id="win" class="text">&nbsp;</div>
+                </div>
+                <div id="draw-4" class="draw-b">
+                    <div class="text">&nbsp;</div>
+                </div>
+                <div id="draw-5" class="draw-a">
+                    <div class="text">&nbsp;</div>
+                </div>
+            </div>
+            <button id="switch">Draw</button>
+        </div>
+    </div>
+    <div id="myModal" class="modal">
+        <div class="modal-content row">
+
+            <div class=" effect8 col-sm-6 col-6 col-lg-6 col-md-6" style="height: 100%; padding: 50px 0; font-size: 30px" id="frame">
+               <p style="font-size:48px; color:black">
+                </p>
+                 <p style="font-size:48px; color:black" id="mob">
+                </p>
+                 <p style="font-size:48px; color:black" id="nid">
+                </p>
+            </div>
+            <div class=" effect8 col-sm-6 col-6 col-lg-6 col-md-6" style="height: 100%; padding: 50px 0;font-size: 20px
+" id="frame2"></div>
+        </div>
+    </div>
+
+</body>
+
+</html>

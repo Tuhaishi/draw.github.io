@@ -1,0 +1,79 @@
+
+body {
+    font-family: Microsoft JhengHei,Lucida Grande,Lucida Sans,Arial,sans-serif;
+    font-size: 2em;
+    text-align: center;
+    vertical-align: top;
+    background-image: url(images/bg2.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100%;
+}
+a { color: #336699; }
+a:hover { color: #cc3366; }
+
+#container {
+    height: 18em;
+    left: 40%;
+    margin: -9em auto 0 -11.5em;
+    position: absolute;
+    top: 75%;
+    width: 23em;
+}
+
+#list_pane {
+    float: left;
+    height: 18em;
+    width: 10em;
+display: none;}
+
+#draw_pane {
+    float: right;
+    height: 18em;
+    width: 13em;
+}
+
+#name_list {
+    font-family: Microsoft JhengHei,Lucida Grande,Lucida Sans,Arial,sans-serif;
+    font-size: 0.5em;
+    height: 14em;
+    width: 7em;
+}
+
+#switch {
+    font-family: Microsoft JhengHei,Lucida Grande,Lucida Sans,Arial,sans-serif;
+    font-size: 1.8em;
+    font-weight: normal;
+    height: 1.4em;
+    margin-top: 1.5em;
+    width: 100%;
+      display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#draw {
+    font-size: 2em;
+    margin-top: -1.5em
+}
+
+.draw-a {
+    color: #cccccc;
+    font-size: 0.6em;
+}
+.draw-b {
+    color: #999999;
+    font-size: 0.8em;
+}
+.draw-c {
+    font-size: 2em;
+    color: white
+}
+
+#footer {
+    bottom: 0.5em;
+    color: #666666;
+    font-size: 0.4em;
+    position: fixed;
+    right: 1em;
+}
